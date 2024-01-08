@@ -9,6 +9,7 @@ class Kernel extends ConsoleKernel
 {
     protected $commands = [
         Commands\Repository::class,
+        Commands\Service::class,
     ];
 
     /**
