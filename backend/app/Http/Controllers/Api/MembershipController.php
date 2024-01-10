@@ -10,25 +10,32 @@ use Illuminate\Support\Env;
 
 class MembershipController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public $mercadopago;
+    public $mercadopago_key;
+    public function __construct(){
+        $this->mercadopago = new GuzzleHttp\Client();
+        $this->mercadopago_key = \env("MERCADOPAGO_API_KEY", null);
+    }
+    public function generateMembershipOneTimePayment(){
+
+    }
+    public function getMembershipOneTimePayment($id){
+
+    }
     public function generatePreapprovalPlan()
     {
-        $mercadopago = new GuzzleHttp\Client();
-        $mercadopago_key = \env("MERCADOPAGO_API_KEY", null);
         try {
-            $res = $mercadopago->request("post", "https://api.mercadopago.com/preapproval_plan", [
+            $res = $this->mercadopago->request("post", "https://api.mercadopago.com/preapproval_plan", [
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . $mercadopago_key,
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
                 ],
                 'json' => [
                     "reason" => 'Gym all week pass',
                     "auto_recurring" => [
                         "frequency" => 1,
                         "frequency_type" => "months",
-                        "repetitions" => 12,
+                        "repetitions" => 3,
                         "billing_day" => 10,
                         "billing_day_proportional" => true,
                         "free_trial" => [
@@ -58,16 +65,13 @@ class MembershipController extends Controller
             return $e->getMessage();
         }
     }
-
-    public function generateMembership()
+    public function generateMembershipSuscription()
     {
-        $mercadopago = new GuzzleHttp\Client();
-        $mercadopago_key = \env("MERCADOPAGO_API_KEY", null);
         try {
-            $res = $mercadopago->request("post", "https://api.mercadopago.com/preapproval", [
+            $res = $this->mercadopago->request("post", "https://api.mercadopago.com/preapproval", [
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . $mercadopago_key,
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
                 ],
                 'json' => [
                     "card_token_id" => 1,
@@ -94,22 +98,51 @@ class MembershipController extends Controller
             return $e->getMessage();
         }
     }
-
     public function getSuscriptionPlan($id)
     {
-        $mercadopago = new GuzzleHttp\Client();
-        $mercadopago_key = \env("MERCADOPAGO_API_KEY", null);
         try {
-            $res = $mercadopago->request("get", 'https://api.mercadopago.com/preapproval/' . $id, [
+            $res = $this->mercadopago->request("get", 'https://api.mercadopago.com/preapproval_plan/'. $id, [
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . $mercadopago_key,
-                ]]);
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                ]]
+            );
+            $data = json_decode($res->getBody(), true);
+             return response()->json(['data' => $data]);
+        } catch (GuzzleHttp\Exception\GuzzleException $e) {
+            return $e->getMessage();
+        }
+
+    }
+    public function updateSuscriptionPlan($id){
+        try {
+            $res = $this->mercadopago->request("put", 'https://api.mercadopago.com/preapproval_plan/' . $id, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                ],
+                'json' => [
+                    "card_token_id" => 1,
+                    "Authorized" => true,
+                    "auto_recurring" => [
+                        "frequency" => 1,
+                        "frequency_type" => "months",
+                        "repetitions" => 1,
+                        "billing_day" => 10,
+                        "billing_day_proportional" => true,
+                        "free_trial" => [
+                            "frequency" => 1,
+                            "frequency_type" => "months"
+                        ],
+                        "transaction_amount" => 1000,
+                        "currency_id" => "ARS",
+                    ],
+                ],
+                ]);
         } catch (GuzzleHttp\Exception\GuzzleException $e) {
             return $e->getMessage();
         }
     }
-
     /**
      * Store a newly created resource in storage.
      */

@@ -30,7 +30,12 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     Route::post('/user-managment/users', [UserController::class, 'store']);
     Route::delete('/user-managment/users/{id}', [UserController::class, 'destroy']);
 
-    Route::post('/membership-managment/payments', [MembershipController::class, 'generateMembership']);
-    Route::post('/membership-managment/generate', [MembershipController::class, 'generatePreapprovalPlan']);
+    Route::post('/membership-managment/suscriptions/payments-suscriptions', [MembershipController::class, 'generateMembershipSuscription']);
+    Route::post('/membership-managment/suscriptions/generation-suscriptions', [MembershipController::class, 'generatePreapprovalPlan']);
+    Route::get('/membership-managment/suscriptions/{id}', [MembershipController::class, 'getSuscriptionPlan']);
+    Route::put('/membership-managment/suscriptions/{id}', [MembershipController::class, 'updateSuscriptionPlan']);
+
+    Route::post('/membership-managment/payments', [MembershipController::class, 'generateMembershipSuscription']);
+    Route::post('/membership-managment/generation', [MembershipController::class, 'generatePreapprovalPlan']);
     Route::post('/membership-managment/{id}', [MembershipController::class, 'getSuscriptionPlan']);
 });
