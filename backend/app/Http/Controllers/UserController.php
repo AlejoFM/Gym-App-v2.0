@@ -4,17 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     /**
+     * @var
+     */
+    protected $userService;
+
+    public function __construct(UserService $userService){
+        $this->userService = $userService;
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $result = $this->userService->getAllUsers();
+        return response()->json($result);
     }
 
     /**
@@ -22,26 +33,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $data = Auth::validate([
-            'name' => 'required',
-            'email' => 'required',
-            'password' => 'required',
-        ]);
+        $data = $request->only('name', 'email', 'password');
+        $response = $this->userService->createUser($data);
 
+        return response()->json($response);
     }
 
     /**
      * Display the specified resource.
      */
     public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
     {
         //
     }
@@ -57,8 +58,8 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy($userId)
     {
-        //
+        return $this->userService->deleteUser($userId);
     }
 }

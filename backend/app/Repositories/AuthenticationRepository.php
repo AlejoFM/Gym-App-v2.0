@@ -24,7 +24,7 @@ class AuthenticationRepository{
 
             $user = User::find(Auth::user()->id);
 
-            $user_token = $user->createToken('appToken')->accessToken;
+            $user_token = $user->createToken('Laravel Password Grant Client')->accessToken;
 
             $result = ['user_data' => $user, 'user_token' => $user_token, 'status' => 200];
             return response()->json($result);

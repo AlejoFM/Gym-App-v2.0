@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthenticationController;
+use App\Http\Controllers\Api\MembershipController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +24,13 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     Route::post('/register', [AuthenticationController::class, 'register']);
     Route::post('/login', [AuthenticationController::class, 'login']);
     Route::post('/logout', [AuthenticationController::class, 'logout'])->middleware('auth:api');
+
+    Route::get('/user-managment/users', [UserController::class, 'index']);
+
+    Route::post('/user-managment/users', [UserController::class, 'store']);
+    Route::delete('/user-managment/users/{id}', [UserController::class, 'destroy']);
+
+    Route::post('/membership-managment/payments', [MembershipController::class, 'generateMembership']);
+    Route::post('/membership-managment/generate', [MembershipController::class, 'generatePreapprovalPlan']);
+    Route::post('/membership-managment/{id}', [MembershipController::class, 'getSuscriptionPlan']);
 });
