@@ -12,17 +12,125 @@ class MembershipController extends Controller
 {
     public $mercadopago;
     public $mercadopago_key;
-    public function __construct(){
+
+    public function __construct()
+    {
         $this->mercadopago = new GuzzleHttp\Client();
         $this->mercadopago_key = \env("MERCADOPAGO_API_KEY", null);
     }
-    public function generateMembershipOneTimePayment(){
+    public function generateMercadoPagoClient()
+    {
+        try {
+            $res = $this->mercadopago->request("post", "https://api.mercadopago.com/v1/customers", [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                ],
+                "json" => [
+                    "data" => [
+                        "address" => [
+                            "id" => "123123",
+                            "zip_code" => "01234567",
+                            "street_name" => "Rua Exemplo",
 
+                        ],
+                        "date_registered" => "2021-10-20T11:37:30.000-04:00",
+                        "default_address" => "Home",
+                        "default_card" => "None",
+                        "description" => "Description del user",
+                        "email" => "jhon@doe.com",
+                        "first_name" => "Jhon",
+                        "identification" => [
+                            "type" => "CPF",
+                            "number" => "12345678900"
+                        ],
+                        "last_name" => "Doe",
+                        "phone" => [
+                            "area_code" => "55",
+                            "number" => "991234567"
+                        ]
+                    ],
+                ]
+            ]);
+            $data = json_decode($res->getBody(), true);
+            return response()->json(['data' => $data]);
+        } catch (GuzzleHttp\Exception\GuzzleException $exception) {
+            return $exception->getMessage();
+        }
     }
-    public function getMembershipOneTimePayment($id){
+    public
+    function generateMembershipOneTimePayment()
+    {
+        try {
+            $res = $this->mercadopago->request("post", "https://api.mercadopago.com/checkout/preferences", [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                ],
+                'json' => [
+                    "back_urls" => null,
+                    "differential_pricing" => null,
+                    "expires" => false,
+                    "items" => [
+                        [
+                            "title" => "Dummy Title",
+                            "description" => "Dummy description",
+                            "category_id" => "car_electronics",
+                            "quantity" => 1,
+                            "currency_id" => "ARS",
+                            "unit_price" => 10
+                        ]
+                    ],
+                    "marketplace_fee" => null,
+                    "metadata" => null,
+                    "payer" => [
+                        "phone" => ["number" => null],
+                        "identification" => null,
+                        "address" => ["street_number" => null]
+                    ],
+                    "payment_methods" => [
+                        "excluded_payment_methods" => null,
+                        "excluded_payment_types" => null,
+                        "installments" => null,
+                        "default_installments" => null
+                    ],
+                    "shipments" => [
+                        "local_pickup" => false,
+                        "default_shipping_method" => null,
+                        "free_methods" => [
+                            ["id" => null]
+                        ],
+                        "cost" => null,
+                        "free_shipping" => false,
+                        "receiver_address" => ["street_number" => null]
+                    ],
+                    "tracks" => null,
+                ]
+            ]);
+        } catch (GuzzleHttp\Exception\GuzzleException $exception) {
+            return $exception->getMessage();
+        }
+        $data = json_decode($res->getBody(), true);
+        return response()->json($data);
+    }
+    public
+    function getMembershipOneTimePayment($id)
+    {
+        try {
+            $res = $this->mercadopago->request("get", "https://api.mercadopago.com/checkout/preferences/{$id}", [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                ]]);
+        }catch (GuzzleHttp\Exception\GuzzleException $exception){
+            return $exception->getMessage();
+        }
+        $data = json_decode($res->getBody(), true);
+        return response()->json($data);
+    }
 
-    }
-    public function generatePreapprovalPlan()
+    public
+    function generatePreapprovalPlan()
     {
         try {
             $res = $this->mercadopago->request("post", "https://api.mercadopago.com/preapproval_plan", [
@@ -65,7 +173,9 @@ class MembershipController extends Controller
             return $e->getMessage();
         }
     }
-    public function generateMembershipSuscription()
+
+    public
+    function generateMembershipSuscription()
     {
         try {
             $res = $this->mercadopago->request("post", "https://api.mercadopago.com/preapproval", [
@@ -98,23 +208,28 @@ class MembershipController extends Controller
             return $e->getMessage();
         }
     }
-    public function getSuscriptionPlan($id)
+
+    public
+    function getSuscriptionPlan($id)
     {
         try {
-            $res = $this->mercadopago->request("get", 'https://api.mercadopago.com/preapproval_plan/'. $id, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
-                ]]
+            $res = $this->mercadopago->request("get", 'https://api.mercadopago.com/preapproval_plan/' . $id, [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                    ]]
             );
             $data = json_decode($res->getBody(), true);
-             return response()->json(['data' => $data]);
+            return response()->json(['data' => $data]);
         } catch (GuzzleHttp\Exception\GuzzleException $e) {
             return $e->getMessage();
         }
 
     }
-    public function updateSuscriptionPlan($id){
+
+    public
+    function updateSuscriptionPlan($id)
+    {
         try {
             $res = $this->mercadopago->request("put", 'https://api.mercadopago.com/preapproval_plan/' . $id, [
                 'headers' => [
@@ -134,19 +249,21 @@ class MembershipController extends Controller
                             "frequency" => 1,
                             "frequency_type" => "months"
                         ],
-                        "transaction_amount" => 1000,
+                        "transaction_amount" => 10000,
                         "currency_id" => "ARS",
                     ],
                 ],
-                ]);
+            ]);
         } catch (GuzzleHttp\Exception\GuzzleException $e) {
             return $e->getMessage();
         }
     }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public
+    function store(Request $request)
     {
         //
     }
@@ -154,7 +271,8 @@ class MembershipController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Membership $membership)
+    public
+    function show(Membership $membership)
     {
         //
     }
@@ -162,7 +280,8 @@ class MembershipController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Membership $membership)
+    public
+    function update(Request $request, Membership $membership)
     {
         //
     }
@@ -170,7 +289,8 @@ class MembershipController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Membership $membership)
+    public
+    function destroy(Membership $membership)
     {
         //
     }

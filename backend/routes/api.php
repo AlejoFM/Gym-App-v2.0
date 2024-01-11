@@ -27,13 +27,23 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
 
     Route::get('/user-managment/users', [UserController::class, 'index']);
 
+
     Route::post('/user-managment/users', [UserController::class, 'store']);
     Route::delete('/user-managment/users/{id}', [UserController::class, 'destroy']);
+
+    Route::post('/clients-managment/', [MembershipController::class, 'generateMercadoPagoClient']);
+    Route::post('/clients-managment/{customer_id}/cards', [MembershipController::class, 'generateMercadoPagoCard']);
+    Route::post('/clients-managment/preferences', [MembershipController::class, 'generateMercadoPagoPreference']);
+
 
     Route::post('/membership-managment/suscriptions/payments-suscriptions', [MembershipController::class, 'generateMembershipSuscription']);
     Route::post('/membership-managment/suscriptions/generation-suscriptions', [MembershipController::class, 'generatePreapprovalPlan']);
     Route::get('/membership-managment/suscriptions/{id}', [MembershipController::class, 'getSuscriptionPlan']);
     Route::put('/membership-managment/suscriptions/{id}', [MembershipController::class, 'updateSuscriptionPlan']);
+
+
+    Route::post('/membership-managment/one-time-payments', [MembershipController::class, 'generateMembershipOneTimePayment']);
+    Route::get('/membership-managment/one-time-payments/{id}', [MembershipController::class, 'getMembershipOneTimePayment']);
 
     Route::post('/membership-managment/payments', [MembershipController::class, 'generateMembershipSuscription']);
     Route::post('/membership-managment/generation', [MembershipController::class, 'generatePreapprovalPlan']);
