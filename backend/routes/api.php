@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Api\AuthenticationController;
 use App\Http\Controllers\Api\MembershipController;
+use App\Http\Controllers\Api\MercadoPago\CardController;
+use App\Http\Controllers\Api\MercadoPago\ClientController;
+use App\Http\Controllers\Api\MercadoPago\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,7 +34,10 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     Route::post('/user-managment/users', [UserController::class, 'store']);
     Route::delete('/user-managment/users/{id}', [UserController::class, 'destroy']);
 
-    Route::post('/clients-managment/', [MembershipController::class, 'generateMercadoPagoClient']);
+    Route::post('/clients-managment/', [ClientController::class, 'generateClient']);
+
+    Route::post('/clients-managment/card', [CardController::class, 'generateCard']);
+
     Route::post('/clients-managment/{customer_id}/cards', [MembershipController::class, 'generateMercadoPagoCard']);
     Route::post('/clients-managment/preferences', [MembershipController::class, 'generateMercadoPagoPreference']);
 
@@ -42,8 +48,11 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     Route::put('/membership-managment/suscriptions/{id}', [MembershipController::class, 'updateSuscriptionPlan']);
 
 
-    Route::post('/membership-managment/one-time-payments', [MembershipController::class, 'generateMembershipOneTimePayment']);
+    Route::post('/membership-managment/one-time-payments', [ProductController::class, 'createProduct']);
+
+    Route::get('/membership-managment/payment-status/{id}', [MembershipController::class, 'getPayment']);
     Route::get('/membership-managment/one-time-payments/{id}', [MembershipController::class, 'getMembershipOneTimePayment']);
+    Route::put('/membership-managment/one-time-payments/{id}', [MembershipController::class, 'updateMembershipOneTimePayment']);
 
     Route::post('/membership-managment/payments', [MembershipController::class, 'generateMembershipSuscription']);
     Route::post('/membership-managment/generation', [MembershipController::class, 'generatePreapprovalPlan']);

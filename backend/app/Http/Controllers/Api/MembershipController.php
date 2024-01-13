@@ -111,6 +111,23 @@ class MembershipController extends Controller
             return $exception->getMessage();
         }
         $data = json_decode($res->getBody(), true);
+        $id = $data['id'];
+        return response()->json(['payment_data' => $data, 'payment_id' => $id]);
+    }
+    public function getPayment($id){
+        try {
+            $res = $this->mercadopago->request("get", "https://api.mercadopago.com/v1/payments/{$id}", [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                ]]);
+        }catch (GuzzleHttp\Exception\GuzzleException $exception){
+            $response = $exception->getResponse();
+            $statusCode = $response->getStatusCode();
+            $errorBody = json_decode($response->getBody(), true);
+            return response()->json(['error' => $errorBody, 'status_code' => $statusCode], $statusCode);
+        }
+        $data = json_decode($res->getBody(), true);
         return response()->json($data);
     }
     public
@@ -121,6 +138,7 @@ class MembershipController extends Controller
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                    ''
                 ]]);
         }catch (GuzzleHttp\Exception\GuzzleException $exception){
             return $exception->getMessage();
@@ -128,7 +146,19 @@ class MembershipController extends Controller
         $data = json_decode($res->getBody(), true);
         return response()->json($data);
     }
-
+    public function updateMembershipOneTimePayment($id){
+        try {
+            $res = $this->mercadopago->request("put", "https://api.mercadopago.com/checkout/preferences/{$id}", [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->mercadopago_key,
+                ]]);
+        }catch (GuzzleHttp\Exception\GuzzleException $exception){
+            return $exception->getMessage();
+        }
+        $data = json_decode($res->getBody(), true);
+        return response()->json($data);
+    }
     public
     function generatePreapprovalPlan()
     {
