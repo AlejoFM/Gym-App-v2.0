@@ -50,7 +50,7 @@ class ProductController extends Controller
                     "default_installments" => 1
                 ],
 
-                "notification_url" => "http://localhost:8000/webhooks",
+                "notification_url" => "https://7c71-186-136-1-244.ngrok-free.app/webhooks",
             ]);
             return response()->json(['data' => $product_data, 'membership_data' => $membership]);
         }catch (MPApiException $exception){
