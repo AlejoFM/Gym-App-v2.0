@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\MercadoPago;
 use App\Http\Controllers\Controller;
 use App\Models\Membership;
 use Illuminate\Http\Request;
+use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Exceptions\MPApiException;
 use MercadoPago\MercadoPagoConfig;
@@ -22,6 +23,8 @@ class ProductController extends Controller
 
         $membership = new Membership();
         $membership = $membership->find($request['id']);
+
+
         try {
             $product_data = $this->product->create([
                 "external_reference" => $request['id'],
@@ -45,11 +48,21 @@ class ProductController extends Controller
                     ),
                     "installments" => 12,
                     "default_installments" => 1
-                ]
+                ],
+
+                "notification_url" => "http://localhost:8000/webhooks",
             ]);
             return response()->json(['data' => $product_data, 'membership_data' => $membership]);
         }catch (MPApiException $exception){
             return $exception->getApiResponse()->getContent();
         }
+    }
+    public function getPaymentNotification(Request $request)
+    {
+        $client = new PaymentClient();
+        $payment_id = $request['payment_id'];
+        $payment = $client->get($payment_id);
+
+        return 200;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\MercadoPago\ProductController;
+use App\Http\Controllers\Api\MercadoPago\WebhooksController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/webhooks', [WebhooksController::class, 'getWebhook']);
+
+Route::get('/success', [ProductController::class, 'getPaymentNotification'])->name("payment.success");
