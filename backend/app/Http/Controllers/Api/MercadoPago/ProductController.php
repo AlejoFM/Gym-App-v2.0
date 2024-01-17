@@ -50,19 +50,18 @@ class ProductController extends Controller
                     "default_installments" => 1
                 ],
 
-                "notification_url" => "https://7c71-186-136-1-244.ngrok-free.app/webhooks",
+                "notification_url" => "https://eb96-186-136-1-244.ngrok-free.app/webhooks",
             ]);
             return response()->json(['data' => $product_data, 'membership_data' => $membership]);
         }catch (MPApiException $exception){
             return $exception->getApiResponse()->getContent();
         }
     }
-    public function getPaymentNotification(Request $request)
+    public function getPaymentNotification($payment_id)
     {
         $client = new PaymentClient();
-        $payment_id = $request['payment_id'];
         $payment = $client->get($payment_id);
 
-        return 200;
+        return response()->json(['data' => $payment]);
     }
 }

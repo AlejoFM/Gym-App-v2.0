@@ -51,7 +51,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     Route::post('/membership-managment/one-time-payments', [ProductController::class, 'createProduct']);
     Route::post('/membership-managment/pay-membership', [ProductController::class, 'generatePay']);
 
-    Route::get('/membership-managment/payment-status/{id}', [ProductController::class, 'getPaymentNotification']);
+    Route::get('/membership-managment/payment-status/{payment_id}', [ProductController::class, 'getPaymentNotification']);
     Route::get('/membership-managment/one-time-payments/{id}', [MembershipController::class, 'getMembershipOneTimePayment']);
     Route::put('/membership-managment/one-time-payments/{id}', [MembershipController::class, 'updateMembershipOneTimePayment']);
 
